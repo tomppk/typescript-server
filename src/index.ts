@@ -2,9 +2,14 @@
 // so we can use them as req and res types
 import express, { Request, Response } from 'express';
 import { router } from './routes/loginRoutes';
+import bodyParser from 'body-parser';
 
 // Initialize express
 const app = express();
+
+// Enable parsing of form data with POST request
+// Allows access to req.body of form data for POST routes
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Use router object to get access to defined routes
 app.use(router);
