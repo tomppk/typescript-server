@@ -1,5 +1,11 @@
 import { Router, Request, Response } from 'express';
 
+// Add custom interface with req.body property defined properly
+// In express type definition file at Request it is defined as body: any
+interface RequestWithBody extends Request {
+  body: { [key: string]: string | undefined };
+}
+
 // Initialize Router instance
 const router = Router();
 
@@ -27,9 +33,18 @@ router.get('/login', (req: Request, res: Response) => {
 
 // req.body is available because form data is parsed using
 // body-parser npm library
-router.post('/login', (req: Request, res: Response) => {
+router.post('/login', (req: RequestWithBody, res: Response) => {
   const { email, password } = req.body;
-  res.send(email + password);
+
+  if (email) {
+    res.send(email.toUpperCase());
+  } else {
+    res.send('You must provide an email');
+  }
+});
+
+router.get('/protected', (req: Request, res: Response) => {
+  res.send('Protected area');
 });
 
 export { router };
