@@ -1,9 +1,22 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 
 // Add custom interface with req.body property defined properly
 // In express type definition file at Request it is defined as body: any
 interface RequestWithBody extends Request {
   body: { [key: string]: string | undefined };
+}
+
+// Middleware to check if user is logged in
+// If logged in then proceed to next() function and don't return anything
+// If not logged in return 403 Forbidden and message
+function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  if (req.session && req.session.loggedIn) {
+    next();
+    return;
+  }
+
+  res.status(403);
+  res.send('Not permitted');
 }
 
 // Initialize Router instance
@@ -66,14 +79,15 @@ router.post('/login', (req: RequestWithBody, res: Response) => {
   }
 });
 
-// Reset req.session cookie
+// Reset req.session cookie that logs user out
 router.get('/logout', (req: Request, res: Response) => {
   req.session = undefined;
   res.redirect('/');
 });
 
-router.get('/protected', (req: Request, res: Response) => {
-  res.send('Protected area');
+// Route protected with requireAuth middleware that checks if user is logged in
+router.get('/protected', requireAuth, (req: Request, res: Response) => {
+  res.send('Welcome to protected route, logged in user');
 });
 
 export { router };
