@@ -9,8 +9,24 @@ interface RequestWithBody extends Request {
 // Initialize Router instance
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.send('hi there');
+// Add type guard to check if there is req.session and if its
+// loggedIn property is true
+router.get('/', (req: Request, res: Response) => {
+  if (req.session && req.session.loggedIn) {
+    res.send(`
+      <div>
+        <div>You are logged in</div>
+        <a href="/logout">Logout</a>
+      </div>
+    `);
+  } else {
+    res.send(`
+    <div>
+      <div>You are not logged in</div>
+      <a href="/login">Login</a>
+    </div>
+  `);
+  }
 });
 
 // autocomplete="off" disables browser Chrome autocomplete
@@ -48,6 +64,12 @@ router.post('/login', (req: RequestWithBody, res: Response) => {
   } else {
     res.send('Invalid email or password');
   }
+});
+
+// Reset req.session cookie
+router.get('/logout', (req: Request, res: Response) => {
+  req.session = undefined;
+  res.redirect('/');
 });
 
 router.get('/protected', (req: Request, res: Response) => {
