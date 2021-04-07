@@ -1,5 +1,5 @@
 import { Request, Response, Router, NextFunction } from 'express';
-import { get, controller } from './decorators';
+import { get, controller, bodyValidator, post } from './decorators';
 
 @controller('/auth')
 class LoginController {
@@ -21,5 +21,29 @@ class LoginController {
         <button>Submit</button>
       </form>
     `);
+  }
+
+  // req.body is available because form data is parsed using
+  // body-parser npm library
+  // Use @post decorator and add route as argument
+  // Use @bodyValidator to check that req.body has 'email' and 'password'
+  // properties or keys
+  @post('/login')
+  @bodyValidator('email', 'password')
+  postLogin(req: Request, res: Response) {
+    const { email, password } = req.body;
+
+    // Hardcode email and password values
+    if (email === 'hi@hi.com' && password === 'password') {
+      // mark user as logged in
+      // define req.session property as object with loggedIn
+      // property set to true
+      req.session = { loggedIn: true };
+
+      // Redirect back to root route
+      res.redirect('/');
+    } else {
+      res.send('Invalid email or password');
+    }
   }
 }
