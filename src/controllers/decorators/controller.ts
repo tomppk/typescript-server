@@ -24,16 +24,23 @@ export function controller(routePrefix: string) {
         target.prototype,
         key
       );
+
       const method: Methods = Reflect.getMetadata(
         MetadataKeys.Method,
         target.prototype,
         key
       );
 
+      // If there is no middleware then middlewares is an empty array
+      const middlewares =
+        Reflect.getMetadata(MetadataKeys.Middleware, target.prototype, key) ||
+        [];
+
       // If there is a 'path' property on object property
-      // Then call e.g. get('/auth/login', getLogin())
+      // Then call router method with url, middlewares, and a function
+      // e.g. get('/auth/login', isAuth, getLogin())
       if (path) {
-        router[method](`${routePrefix}${path}`, routeHandler);
+        router[method](`${routePrefix}${path}`, ...middlewares, routeHandler);
       }
     }
   };
