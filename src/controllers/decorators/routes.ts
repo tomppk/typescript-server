@@ -2,6 +2,15 @@
 import 'reflect-metadata';
 import { Methods } from './Methods';
 import { MetadataKeys } from './MetadataKeys';
+import { RequestHandler } from 'express';
+
+// Interface to make sure that the method or property of object satisfies
+// the RequestHandler type so takes in Response and Request and returns void
+// value? means the value of PropertyDescriptor so the name of object method or
+// property and ? means optional
+interface RouteHandlerDescriptor extends PropertyDescriptor {
+  value?: RequestHandler;
+}
 
 // Factory decorator that takes url path as argument and returns decorator
 // This factory decorator is wrapped inside another function that takes in the
@@ -18,7 +27,7 @@ import { MetadataKeys } from './MetadataKeys';
 
 function routeBinder(method: string) {
   return function (path: string) {
-    return function (target: any, key: string, desc: PropertyDescriptor) {
+    return function (target: any, key: string, desc: RouteHandlerDescriptor) {
       Reflect.defineMetadata(MetadataKeys.Path, path, target, key);
       Reflect.defineMetadata(MetadataKeys.Method, method, target, key);
     };

@@ -1,12 +1,12 @@
 // Import Request and Response type definitions from express library
 // so we can use them as req and res types
 import express, { Request, Response } from 'express';
-import { router } from './routes/loginRoutes';
 import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 import { AppRouter } from './AppRouter';
 
 import './controllers/LoginController';
+import './controllers/RootController';
 
 // Initialize express
 const app = express();
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({ keys: ['somerandomstring'] }));
 
 // Use router object to get access to defined routes
-app.use(router);
+// app.use(router);
 
 // Use AppRouter router object to get access to its routes
 app.use(AppRouter.getInstance());

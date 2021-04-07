@@ -1,6 +1,12 @@
 import { Request, Response, Router, NextFunction } from 'express';
 import { get, controller, bodyValidator, post } from './decorators';
 
+// Add custom interface with req.body property defined properly
+// In express type definition file at Request it is defined as body: any
+// interface RequestWithBody extends Request {
+//   body: { [key: string]: string | undefined };
+// }
+
 @controller('/auth')
 class LoginController {
   // autocomplete="off" disables browser Chrome autocomplete
@@ -45,5 +51,13 @@ class LoginController {
     } else {
       res.send('Invalid email or password');
     }
+  }
+
+  // Access this route handler anytime there is a request to '/logout'
+  // Reset req.session cookie that logs user out
+  @get('/logout')
+  getLogout(req: Request, res: Response) {
+    req.session = undefined;
+    res.redirect('/');
   }
 }
