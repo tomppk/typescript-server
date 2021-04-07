@@ -1,5 +1,7 @@
 // Enable using metadata. Gives access to global Reflect object.
 import 'reflect-metadata';
+import { Methods } from './Methods';
+import { MetadataKeys } from './MetadataKeys';
 
 // Factory decorator that takes url path as argument and returns decorator
 // This factory decorator is wrapped inside another function that takes in the
@@ -17,8 +19,8 @@ import 'reflect-metadata';
 function routeBinder(method: string) {
   return function (path: string) {
     return function (target: any, key: string, desc: PropertyDescriptor) {
-      Reflect.defineMetadata('path', path, target, key);
-      Reflect.defineMetadata('method', method, target, key);
+      Reflect.defineMetadata(MetadataKeys.Path, path, target, key);
+      Reflect.defineMetadata(MetadataKeys.Method, method, target, key);
     };
   };
 }
@@ -26,8 +28,10 @@ function routeBinder(method: string) {
 // Create and export all our different HTTP methods
 // When we call routeBinder with 'get' it is going to return a factory decorator
 // The factory decorator has a reference back to method argument
-export const get = routeBinder('get');
-export const put = routeBinder('put');
-export const post = routeBinder('post');
-export const del = routeBinder('delete');
-export const patch = routeBinder('patch');
+// All the possible HTTP routes to use are defined in Methods enum so we
+// always know which values they can have
+export const get = routeBinder(Methods.Get);
+export const put = routeBinder(Methods.Put);
+export const post = routeBinder(Methods.Post);
+export const del = routeBinder(Methods.Del);
+export const patch = routeBinder(Methods.Patch);
