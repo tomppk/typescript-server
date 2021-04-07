@@ -1,5 +1,7 @@
 import { Request, Response, Router, NextFunction } from 'express';
-import { get } from './decorators/routes';
+import { get, controller } from './decorators';
+
+@controller('/auth')
 class LoginController {
   // autocomplete="off" disables browser Chrome autocomplete
   // and suggestions for form fields

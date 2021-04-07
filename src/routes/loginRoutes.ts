@@ -1,3 +1,5 @@
+import { Request, Response, Router, NextFunction } from 'express';
+
 // Add custom interface with req.body property defined properly
 // In express type definition file at Request it is defined as body: any
 interface RequestWithBody extends Request {
