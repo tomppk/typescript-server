@@ -1,5 +1,3 @@
-import { Router, Request, Response, NextFunction } from 'express';
-
 // Add custom interface with req.body property defined properly
 // In express type definition file at Request it is defined as body: any
 interface RequestWithBody extends Request {
@@ -40,24 +38,6 @@ router.get('/', (req: Request, res: Response) => {
     </div>
   `);
   }
-});
-
-// autocomplete="off" disables browser Chrome autocomplete
-// and suggestions for form fields
-router.get('/login', (req: Request, res: Response) => {
-  res.send(`
-    <form method="POST" autocomplete="off">
-      <div>
-        <label>Email<label>
-        <input name="email" />
-      </div>
-      <div>
-        <label>Password<label>
-        <input name="password" type="password" />
-      </div>
-      <button>Submit</button>
-    </form>
-  `);
 });
 
 // req.body is available because form data is parsed using
