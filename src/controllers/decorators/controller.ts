@@ -2,6 +2,28 @@ import 'reflect-metadata';
 import { AppRouter } from '../../AppRouter';
 import { Methods } from './Methods';
 import { MetadataKeys } from './MetadataKeys';
+import { Request, Response, RequestHandler, NextFunction } from 'express';
+
+// Look at req.body and make sure that all the different keys exist inside body
+// If they are not return a response error message and call next function
+// Middleware to check that all the different keys are available
+// Returns a function that serves as a middleware
+function bodyValidators(keys: string): RequestHandler {
+  return function (req: Request, res: Response, next: NextFunction) {
+    if (!req.body) {
+      res.status(422).send('Invalid request');
+      return;
+    }
+
+    for (let key of keys) {
+      if (!req.body[key]) {
+        res.status(422).send('Invalid request');
+        return;
+      }
+    }
+    next();
+  };
+}
 
 // Decorator for a class to add root route like '/' before all get, post etc.
 // Target is the constructor function of the class
@@ -36,11 +58,27 @@ export function controller(routePrefix: string) {
         Reflect.getMetadata(MetadataKeys.Middleware, target.prototype, key) ||
         [];
 
+      // Get array of all the keys of the class that is properties, methods,
+      // accessors eg. ['email', 'password']
+      const requiredBodyProps =
+        Reflect.getMetadata(MetadataKeys.Validator, target.prototype, key) ||
+        [];
+
+      // Middleware to check that all the class or object keys or properties
+      // exist inside the req.body object
+      const validator = bodyValidators(requiredBodyProps);
+
       // If there is a 'path' property on object property
-      // Then call router method with url, middlewares, and a function
+      // Then call router method with url, middlewares, validator middleware
+      // and a function
       // e.g. get('/auth/login', isAuth, getLogin())
       if (path) {
-        router[method](`${routePrefix}${path}`, ...middlewares, routeHandler);
+        router[method](
+          `${routePrefix}${path}`,
+          ...middlewares,
+          validator,
+          routeHandler
+        );
       }
     }
   };
